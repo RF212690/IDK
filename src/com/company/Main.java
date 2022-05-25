@@ -1,4 +1,5 @@
 package com.company;
+import java.io.IOException;
 import java.util.Hashtable;
 import java.util.Scanner;
 import java.util.Random;
@@ -6,6 +7,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.sql.*;
+import static java.lang.Integer.parseInt;
 
 public class Main {
     public static int[][] board=new int[8][8];
@@ -14,14 +16,51 @@ public class Main {
 
 
     public static void main(String[] args){
-        createDatabase();
-
+        //createDatabase();
+        String username="";
+        boolean loggedIn=false;
+        while(!loggedIn){
         if(regOrLog()=='r'){
-            register();
-        }else{
-            login();
+            Scanner input = new Scanner(System.in);
+            System.out.println("Insert username: ");
+            try {
+                username = input.next();
+            } catch (Exception e) {
+                System.out.println("Error: " + e);
+                input.next();
+            }
+            System.out.println("Insert password: ");
+            String password = "";
+            try {
+                password = input.next();
+            } catch (Exception e) {
+                System.out.println("Error: " + e);
+                input.next();
+            }
+            loggedIn=register(username,password);
+        }else {
+            Scanner input = new Scanner(System.in);
+            System.out.println("Insert username: ");
+            try {
+                username = input.next();
+            } catch (Exception e) {
+                System.out.println("Error: " + e);
+                input.next();
+            }
+            System.out.println("Insert password: ");
+            String password = "";
+            try {
+                password = input.next();
+            } catch (Exception e) {
+                System.out.println("Error: " + e);
+                input.next();
+            }
+            loggedIn = login(username, password);
         }
-        Player player1=new Player(random(1),1000,/*insert username*/"A");
+        }
+        //ask if user wants to start game first or change settings
+        int elo=getElo(username);
+        Player player1=new Player(random(1), elo,username);
         if(player1.getPlayerColor()==0){
         Player player2=new Player(1,1000,"Bot");
         } else{
@@ -29,8 +68,8 @@ public class Main {
         }
         setHashTable();
         setBoard(0);
-        displayBoard();
-
+        displayBoard();//make it print elo and name of players
+        //game loop
     }
     public static void setBoard(int setup){
         for (int i = 0; i < 8; i++) {
@@ -51,9 +90,7 @@ public class Main {
             }
             System.out.println();
         }
-
     }
-
     public static void setHashTable(){
         Pieces.put(0,"WP");Pieces.put(1,"BP");Pieces.put(2,"WR");Pieces.put(3,"BR");Pieces.put(4,"WN");
         Pieces.put(5,"BN");Pieces.put(6,"WB");Pieces.put(7,"BB");Pieces.put(8,"WK");Pieces.put(9,"BK");
@@ -94,13 +131,84 @@ public class Main {
             System.out.println("invalid input");
         }
         }
-
     }
-    public static void register(){
-
+    public static boolean register(String username,String password){
+        boolean found=false;
+        if(username.contains("-") || password.contains("-")){
+            System.out.println("Invalid username/password,usernames and passwords must not contain the symbol \"-\" ");
+            return false;
+        }
+        File userFile=new File("user.txt");
+        try{
+            FileWriter writer=new FileWriter(userFile.getName(),true);
+            if(userFile.createNewFile()){
+                System.out.println("n");
+                writer.write("username---password---elo\n");
+            }
+            Scanner userInfo= new Scanner(userFile);
+            userInfo.next();
+            while (userInfo.hasNextLine()){
+                String[] userinfo=userInfo.nextLine().split("---");
+                if(userinfo[0].equals(username)){
+                    System.out.println("username already in use");
+                    return false;
+                }
+            }
+            writer.write(username+"---"+password+"---1000\n");
+            writer.close();
+            return true;
+        }
+        catch(IOException e){
+            System.out.println("Error: "+e);
+        }
+        return false;
     }
-    public static void login(){
+    public static boolean login(String username,String password){
+        File userFile=new File("user.txt");
+        try{
+            FileWriter writer=new FileWriter(userFile.getName(),true);
+            if(userFile.createNewFile()){
+                writer.write("username---password---elo");
+            }
+            writer.close();
+        }
+        catch(IOException e){
+            System.out.println("Error: "+e);
+        }
+        try{
+        Scanner userInfo= new Scanner(userFile);
 
+                userInfo.next();
+                while (userInfo.hasNextLine()){
+                    String[] userinfo=userInfo.nextLine().split("---");
+                    if(userinfo[0].equals(username) && userinfo[1].equals(password)){
+                        System.out.println("login successful");
+                        return true;
+                    }
+                }
+        }
+        catch(IOException e){
+            System.out.println("Error: "+e);
+        }
+        System.out.println("account not found/password does not match username. Try again");
+        return false;
+    }
+    public static int getElo(String username){
+        File userFile=new File("user.txt");
+        try{
+            Scanner userInfo= new Scanner(userFile);
+
+            userInfo.next();
+            while (userInfo.hasNextLine()){
+                String[] userinfo=userInfo.nextLine().split("---");
+                if(userinfo[0].equals(username)){
+                    return parseInt(userinfo[2]);
+                }
+            }
+        }catch(IOException e){
+            System.out.println("Error: "+e);
+        }
+        return -1;
     }
     public static void createDatabase(){
         String URL="C:\\Users\\rf212690\\IdeaProjects\\IDK\\";

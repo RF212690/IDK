@@ -1,0 +1,4 @@
+username---password---elo
+r---r---1000
+p---p---1000
+m---m---1000
