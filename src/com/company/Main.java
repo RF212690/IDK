@@ -4,14 +4,13 @@ import java.util.Hashtable;
 import java.util.Scanner;
 import java.util.Random;
 import java.io.File;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.sql.*;
 import static java.lang.Integer.parseInt;
 
 public class Main {
     public static int[][] board=new int[8][8];
-    public static Hashtable<Integer,String> Pieces=new Hashtable<Integer,String>();
+    public static Hashtable<Integer,String> Pieces=new Hashtable<>();
 
 
 
@@ -58,60 +57,120 @@ public class Main {
             loggedIn = login(username, password);
         }
         }
-        //ask if user wants to start game first or change settings
+        System.out.println("Press S to change the settings and G to start a game against a bot,\nenter EXIT at anytime to exit program");
+        while(true){
+        String answer=getInput();
+        if(answer.equalsIgnoreCase("s")){
+            settings();
+
+        }else if(answer.equalsIgnoreCase("g")){
+            break;
+        }
+        else{
+            System.out.println("not an option, try again.");
+        }
+        }
         int elo=getElo(username);
+        setBoard(0);
+        setHashTable();
         Player player1=new Player(random(1), elo,username);
         if(player1.getPlayerColor()==0){
         Player player2=new Player(1,1000,"Bot");
+            displayBoard(player1,player2);
         } else{
             Player player2=new Player(0,1000,"Bot");
+            displayBoard(player2,player1);
         }
-        setHashTable();
-        setBoard(0);
-        displayBoard();//make it print elo and name of players
         //game loop
     }
-    public static void setBoard(int setup){
-        for (int i = 0; i < 8; i++) {
-            board[i][1]=0;
-            board[i][6]=1;
-            board[i][5]=-1;
-            board[i][4]=-1;
-            board[i][3]=-1;
-            board[i][2]=-1;
-            if(i<3){board[i][0]=i*2+2;board[i][7]=i*2+3;}
-            else {board[i][0]=(7-i)*2+2;board[i][7]=(7-i)*2+3;}
+    public static void settings(){
+        //make settings
+    }
+    public static String getInput(){
+        Scanner input=new Scanner(System.in);
+        try{
+            String answer= input.next();
+            if(answer.equalsIgnoreCase("exit")){
+                System.exit(0);
+            }
+            return answer;
+        }catch(Exception e){
+            return "Error";
         }
     }
-    public static void displayBoard(){
+    public static void setBoard(int setup){
+        if(setup==0) {
+            for (int i = 0; i < 8; i++) {
+                board[i][1] = 0;
+                board[i][6] = 1;
+                board[i][5] = -1;
+                board[i][4] = -1;
+                board[i][3] = -1;
+                board[i][2] = -1;
+                if (i < 3) {
+                    board[i][0] = i * 2 + 2;
+                    board[i][7] = i * 2 + 3;
+                } else {
+                    board[i][0] = (7 - i) * 2 + 2;
+                    board[i][7] = (7 - i) * 2 + 3;
+                }
+            }
+        }
+    }
+    public static void displayBoard(Player White, Player Black){
+        System.out.println(Black.getPlayerName()+"     "+Black.getPlayerRating());
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
                 System.out.print(Pieces.get(board[j][7-i])+" ");
             }
             System.out.println();
         }
+        System.out.println(White.getPlayerName()+"     "+White.getPlayerRating());
     }
     public static void setHashTable(){
         Pieces.put(0,"WP");Pieces.put(1,"BP");Pieces.put(2,"WR");Pieces.put(3,"BR");Pieces.put(4,"WN");
         Pieces.put(5,"BN");Pieces.put(6,"WB");Pieces.put(7,"BB");Pieces.put(8,"WK");Pieces.put(9,"BK");
         Pieces.put(10,"WQ");Pieces.put(11,"BQ");Pieces.put(-1,"VO");
     }
-    public static void PlayerMove(){
+    public static void PlayerMove(Player Player){
+        boolean moveIsLegal=false;
         Scanner input=new Scanner(System.in);
         int xCor=-1;
-        int yCor=0;
-        do{
-        System.out.println("Select X coordinate of piece you want to move: ");
-        try{
-        xCor=input.nextInt();}
-            catch(Exception e){
-                System.out.println("Error: "+e);
+        int yCor=-1;
+        do {
+            do {
+                System.out.println("Select X coordinate of piece you want to move: ");
+                try {
+                    xCor = input.nextInt();
+                } catch (Exception e) {
+                    System.out.println("Error: " + e);
+                }
+                if (xCor < 1 || xCor > 9) {
+                    System.out.println("Not a valid input");
+                }
+            } while (xCor < 1 || xCor > 9);
+            do {
+                System.out.println("Select Y coordinate of piece you want to move: ");
+                try {
+                    yCor = input.nextInt();
+                } catch (Exception e) {
+                    System.out.println("Error: " + e);
+                }
+                if (yCor < 1 || yCor > 9) {
+                    System.out.println("Not a valid input");
+                }
+            } while (yCor < 1 || yCor > 9);
+            if(board[xCor-1][8-yCor]==-1){
+                System.out.println("no piece in that square");
+            }else{
+                int piece=board[xCor-1][8-yCor];
+                if(piece%2!= Player.getPlayerColor()){
+                    System.out.println("This is an enemy piece");
+                }
             }
-        if(xCor<0 || xCor>0){
-            System.out.println("Not a valid input");
-        }
-        }while(xCor<0 || xCor>8);
-        System.out.println("Select Y coordinate of piece you want to move: ");
+            //ask player where he wants to move that piece, then check if its legal(check for castle, check if any next enemy move can kill king)
+        }while(!moveIsLegal);
+
         //continue
     }
     public static int random(int max){
@@ -133,7 +192,6 @@ public class Main {
         }
     }
     public static boolean register(String username,String password){
-        boolean found=false;
         if(username.contains("-") || password.contains("-")){
             System.out.println("Invalid username/password,usernames and passwords must not contain the symbol \"-\" ");
             return false;
@@ -214,7 +272,7 @@ public class Main {
         String URL="C:\\Users\\rf212690\\IdeaProjects\\IDK\\";
         String username="username";
         String password="password";
-        String rating="rating";///add rating to table
+        String rating="rating";//add rating to database
         try{
         Connection connection=DriverManager.getConnection(URL,username,password);}catch(SQLException e){
             System.out.println("Error: "+e);
