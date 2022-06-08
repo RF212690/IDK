@@ -1,10 +1,10 @@
 package com.company;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Scanner;
 import java.util.Random;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.sql.*;
 import static java.lang.Integer.parseInt;
@@ -12,10 +12,6 @@ import static java.lang.Integer.parseInt;
 public class Main {
     public static int[][] board=new int[8][8];
     public static Hashtable<Integer,String> Pieces=new Hashtable<Integer,String>();
-    int whiteQueenCastle;
-    int whiteKingCastle;
-    int blackQueenCastle;
-    int blackKingCastle;
 
 
 
@@ -37,7 +33,6 @@ public class Main {
             String password = "";
             try {
                 password = input.next();
-                //hash password
             } catch (Exception e) {
                 System.out.println("Error: " + e);
                 input.next();
@@ -56,7 +51,6 @@ public class Main {
             String password = "";
             try {
                 password = input.next();
-                //hash password
             } catch (Exception e) {
                 System.out.println("Error: " + e);
                 input.next();
@@ -86,84 +80,39 @@ public class Main {
             board[i][3]=-1;
             board[i][2]=-1;
             if(i<3){board[i][0]=i*2+2;board[i][7]=i*2+3;}
-            else {board[i][0]=(7-i)*2+2;board[i][7]=(7-i)*2+3;
-            }
+            else {board[i][0]=(7-i)*2+2;board[i][7]=(7-i)*2+3;}
         }
     }
     public static void displayBoard(){
         for (int i = 0; i < 8; i++) {
-            System.out.print(8-i+"  ");
             for (int j = 0; j < 8; j++) {
                 System.out.print(Pieces.get(board[j][7-i])+" ");
             }
             System.out.println();
         }
-        System.out.println("   1  2  3  4  5  6  7  8");
     }
     public static void setHashTable(){
         Pieces.put(0,"WP");Pieces.put(1,"BP");Pieces.put(2,"WR");Pieces.put(3,"BR");Pieces.put(4,"WN");
         Pieces.put(5,"BN");Pieces.put(6,"WB");Pieces.put(7,"BB");Pieces.put(8,"WK");Pieces.put(9,"BK");
         Pieces.put(10,"WQ");Pieces.put(11,"BQ");Pieces.put(-1,"VO");
     }
-    public static void PlayerMove(int playerColor){
+    public static void PlayerMove(){
         Scanner input=new Scanner(System.in);
-        int piece=0;
-        int xPiece =-1;
-        int yPiece =0;
-        int xCor=0;
+        int xCor=-1;
         int yCor=0;
-        while(true) {
-            do {
-                System.out.println("Select X coordinate of piece you want to move: ");
-                try {
-                    xPiece = input.nextInt();
-                } catch (Exception e) {
-                    System.out.println("Error: " + e);
-                }
-                if (xPiece < 1 || xPiece > 8) {
-                    System.out.println("Not a valid input");
-                }
-            } while (xPiece < 1 || xPiece > 8);
-            do {
-                System.out.println("Select y coordinate of piece you want to move: ");
-                try {
-                    yPiece = input.nextInt();
-                } catch (Exception e) {
-                    System.out.println("Error: " + e);
-                }
-                if (yPiece < 1 || yPiece > 8) {
-                    System.out.println("Not a valid input");
-                }
-            } while (yPiece < 1 || yPiece > 8);
-            piece = board[xPiece][yPiece - 1];
-            if (piece % 2 != playerColor) {
-                System.out.println("Invalid Piece position");
-            } else break;
-            ArrayList<int[]>moves=getLegalMoves(xPiece,yPiece);
+        do{
+        System.out.println("Select X coordinate of piece you want to move: ");
+        try{
+        xCor=input.nextInt();}
+            catch(Exception e){
+                System.out.println("Error: "+e);
+            }
+        if(xCor<0 || xCor>0){
+            System.out.println("Not a valid input");
         }
-        do{
-            System.out.println("Select X coordinate of where you want to move the piece: ");
-            try{
-                xCor=input.nextInt();}
-            catch(Exception e){
-                System.out.println("Error: "+e);
-            }
-            if(xCor<1 || xCor>8){
-                System.out.println("Not a valid input");
-            }
         }while(xCor<0 || xCor>8);
-        do{
-            System.out.println("Select y coordinate of where you want to move the piece: ");
-            try{
-                yCor=input.nextInt();}
-            catch(Exception e){
-                System.out.println("Error: "+e);
-            }
-            if(yCor<1 || yCor>8){
-                System.out.println("Not a valid input");
-            }
-        }while(yCor<0 || yCor>8);
-
+        System.out.println("Select Y coordinate of piece you want to move: ");
+        //continue
     }
     public static int random(int max){
         Random random= new Random();
@@ -261,28 +210,6 @@ public class Main {
         }
         return -1;
     }
-    public static ArrayList<int[]> getLegalMoves(int xPosition,int yPosition){
-        ArrayList<int[]>moves=new ArrayList<>();
-        int Piece=board[xPosition][yPosition];
-        int PlayerColor=Piece%2;
-        if(Piece-PlayerColor==0){
-            if(board[xPosition-1][yPosition+1]!=-1 && board[xPosition-1][yPosition+1]%2!=PlayerColor){
-                moves.add(new int[]{xPosition-1, yPosition+1});
-            }
-            if(board[xPosition+1][yPosition+1]!=-1 && board[xPosition+1][yPosition+1]%2!=PlayerColor){
-                moves.add(new int[]{xPosition+1, yPosition+1});
-            }
-        }
-
-
-
-
-
-
-
-        return moves;
-    }
-
     public static void createDatabase(){
         String URL="C:\\Users\\rf212690\\IdeaProjects\\IDK\\";
         String username="username";
