@@ -286,37 +286,74 @@ public class Main {
                 }
             }
         }
-        if(Piece-PlayerColor==2){
-            int topStop=8;
-            int bottomStop=8;
-            int rightStop=8;
-            int leftStop=8;
+        if(Piece-PlayerColor==2) {
+            int topStop = 8;
+            int bottomStop = 8;
+            int rightStop = 8;
+            int leftStop = 8;
             for (int i = 1; i < 7; i++) {
-                if(i+xPosition<rightStop && board[xPosition+i][yPosition]%2+PlayerColor==1){
-                    moves.add(new int[]{xPosition+i,yPosition});
-                    if(board[xPosition+i][yPosition]!=-1){
-                        rightStop=xPosition+i+1;
+                if (i + xPosition < rightStop) {
+                    if (board[xPosition + i][yPosition] % 2 != PlayerColor) {
+                        moves.add(new int[]{xPosition + i, yPosition});
+                    }
+                    if (board[xPosition + i][yPosition] % 2 >= 0) {
+                        rightStop = xPosition + i;
                     }
                 }
-                if(xPosition+i<leftStop && board[xPosition-i][yPosition]%2+PlayerColor==1){
-                    moves.add(new int[]{xPosition+i,yPosition});
-                    if(board[xPosition-i][yPosition]!=-1){
-                        leftStop=xPosition+i+1;
+                if (i + xPosition < leftStop) {
+                    if (board[xPosition - i][yPosition] % 2 != PlayerColor) {
+                        moves.add(new int[]{xPosition - i, yPosition});
+                    }
+                    if (board[xPosition - i][yPosition] % 2 != -1) {
+                        leftStop = xPosition + i;
                     }
                 }
-                if(i+xPosition<rightStop && board[xPosition+i][yPosition]%2+PlayerColor==1){
-                    moves.add(new int[]{xPosition+i,yPosition});
-                    if(board[xPosition+i][yPosition]!=-1){
-                        rightStop=xPosition+i+1;
+                if (i + yPosition < topStop) {
+                    if (board[xPosition][yPosition + i] % 2 != PlayerColor) {
+                        moves.add(new int[]{xPosition, yPosition + i});
+                    }
+                    if (board[xPosition][yPosition + i] % 2 != -1) {
+                        topStop = yPosition + i;
                     }
                 }
-                if(i+xPosition<rightStop && board[xPosition+i][yPosition]%2+PlayerColor==1){
-                    moves.add(new int[]{xPosition+i,yPosition});
-                    if(board[xPosition+i][yPosition]!=-1){
-                        rightStop=xPosition+i+1;
+                if (i + yPosition < bottomStop) {
+                    if (board[xPosition][yPosition - i] != PlayerColor) {
+                        moves.add(new int[]{xPosition, yPosition - i});
+                    }
+                    if (board[xPosition][yPosition - i] != -1) {
+                        bottomStop = yPosition + i;
                     }
                 }
             }
+        }
+        if(Piece-PlayerColor==4){
+            if(xPosition-1>=0 && yPosition-2>=0 && board[xPosition-1][yPosition-2]%2!=PlayerColor){
+                    moves.add(new int[]{xPosition-1,yPosition-2});
+            }
+            if(xPosition+1>=0 && yPosition-2>=0 && board[xPosition+1][yPosition-2]%2!=PlayerColor){
+                moves.add(new int[]{xPosition+1,yPosition-2});
+            }
+            if(xPosition-1>=0 && yPosition+2>=0 && board[xPosition-1][yPosition+2]%2!=PlayerColor){
+                moves.add(new int[]{xPosition-1,yPosition+2});
+            }
+            if(xPosition+1>=0 && yPosition+2>=0 && board[xPosition+1][yPosition+2]%2!=PlayerColor){
+                moves.add(new int[]{xPosition+1,yPosition+2});
+            }
+            if(xPosition-2>=0 && yPosition-1>=0 && board[xPosition-2][yPosition-1]%2!=PlayerColor){
+                moves.add(new int[]{xPosition-2,yPosition-1});
+            }
+            if(xPosition+2>=0 && yPosition-1>=0 && board[xPosition+2][yPosition-1]%2!=PlayerColor){
+                moves.add(new int[]{xPosition+2,yPosition-1});
+            }
+            if(xPosition-2>=0 && yPosition+1>=0 && board[xPosition-2][yPosition+1]%2!=PlayerColor){
+                moves.add(new int[]{xPosition-2,yPosition+1});
+            }
+            if(xPosition+2>=0 && yPosition+1>=0 && board[xPosition+2][yPosition+1]%2!=PlayerColor){
+                moves.add(new int[]{xPosition+2,yPosition+1});
+            }
+        }
+        if(Piece-PlayerColor==6){
+
         }
         return moves;
     }
